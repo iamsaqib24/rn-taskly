@@ -35,6 +35,7 @@ export default function Layout() {
         name="counter"
         options={{
           title: "Counter",
+          headerShown: false,
           tabBarIcon: ({ size, color }) => (
             <Feather name="clock" size={size} color={color} />
           ),
