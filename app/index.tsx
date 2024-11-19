@@ -6,6 +6,7 @@ import { useState } from "react";
 type ShoppingListItemType = {
   id: string;
   name: string;
+  completedAtTimestamp?: number;
 };
 
 const initialList: ShoppingListItemType[] = [
@@ -49,12 +50,30 @@ export default function App() {
     setShoppingList(newShoppingList);
   };
 
+  const handleToggleComplete = (id: string) => {
+    const newShoppingList = shoppingList.map((item) => {
+      if (item.id === id) {
+        return {
+          ...item,
+          completedAtTimestamp: item.completedAtTimestamp
+            ? undefined
+            : Date.now(),
+        };
+      }
+      return item;
+    });
+
+    setShoppingList(newShoppingList);
+  };
+
   return (
     <FlatList
       renderItem={({ item }) => {
         return (
           <ShoppingListItem
             name={item.name}
+            isCompleted={Boolean(item.completedAtTimestamp)}
+            onToggleComplete={() => handleToggleComplete(item.id)}
             onDelete={() => handleDelete(item.id)}
           />
         );
