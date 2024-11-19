@@ -1,11 +1,4 @@
-import {
-  StyleSheet,
-  TextInput,
-  FlatList,
-  ScrollView,
-  View,
-  Text,
-} from "react-native";
+import { StyleSheet, TextInput, FlatList, View, Text } from "react-native";
 import { ShoppingListItem } from "../components/ShoppingListItem";
 import { theme } from "../theme";
 import { useState } from "react";
@@ -51,10 +44,20 @@ export default function App() {
     }
   };
 
+  const handleDelete = (id: string) => {
+    const newShoppingList = shoppingList.filter((item) => item.id !== id);
+    setShoppingList(newShoppingList);
+  };
+
   return (
     <FlatList
       renderItem={({ item }) => {
-        return <ShoppingListItem name={item.name} />;
+        return (
+          <ShoppingListItem
+            name={item.name}
+            onDelete={() => handleDelete(item.id)}
+          />
+        );
       }}
       ListEmptyComponent={
         <View style={styles.listEmptyContainer}>
