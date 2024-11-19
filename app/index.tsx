@@ -1,4 +1,11 @@
-import { StyleSheet, TextInput, View, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  TextInput,
+  FlatList,
+  ScrollView,
+  View,
+  Text,
+} from "react-native";
 import { ShoppingListItem } from "../components/ShoppingListItem";
 import { theme } from "../theme";
 import { useState } from "react";
@@ -23,6 +30,11 @@ const initialList: ShoppingListItemType[] = [
   },
 ];
 
+// const testData = new Array(1000).fill(null).map((item, index) => ({
+//   id: String(index),
+//   name: String(index),
+// }));
+
 export default function App() {
   const [shoppingList, setShoppingList] =
     useState<ShoppingListItemType[]>(initialList);
@@ -40,26 +52,43 @@ export default function App() {
   };
 
   return (
-    <ScrollView
+    <FlatList
+      renderItem={({ item }) => {
+        return <ShoppingListItem name={item.name} />;
+      }}
+      ListEmptyComponent={
+        <View style={styles.listEmptyContainer}>
+          <Text>Your shopping list is empty</Text>
+        </View>
+      }
+      ListHeaderComponent={
+        <TextInput
+          value={value}
+          onChangeText={setValue}
+          returnKeyType="done"
+          onSubmitEditing={handleSubmit}
+          placeholder="E.g. Coffee"
+          style={styles.textInput}
+        />
+      }
+      // data={testData}
+      data={shoppingList}
       style={styles.container}
       stickyHeaderIndices={[0]}
       contentContainerStyle={styles.contentContainer}
-    >
-      <TextInput
-        value={value}
-        onChangeText={setValue}
-        returnKeyType="done"
-        onSubmitEditing={handleSubmit}
-        placeholder="E.g. Coffee"
-        style={styles.textInput}
-      />
-      {shoppingList.map((item) => (
-        <ShoppingListItem name={item.name} key={item.id} />
-      ))}
+    />
 
-      {/* <ShoppingListItem name="Whoop Band" />
-      <ShoppingListItem name="iPad" isCompleted /> */}
-    </ScrollView>
+    // <ScrollView
+    // >
+
+    //   {shoppingList.map((item) => (
+    //     <ShoppingListItem name={item.name} key={item.id} />
+    //   ))}
+
+    //   {/* <ShoppingListItem name="Whoop Band" />
+    //   <ShoppingListItem name="iPad" isCompleted /> */}
+
+    // </ScrollView>
   );
 }
 
@@ -82,5 +111,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     borderRadius: 50,
     backgroundColor: theme.colorWhite,
+  },
+  listEmptyContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 18,
   },
 });
