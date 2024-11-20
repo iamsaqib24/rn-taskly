@@ -1,7 +1,10 @@
 import { StyleSheet, TextInput, FlatList, View, Text } from "react-native";
 import { ShoppingListItem } from "../components/ShoppingListItem";
 import { theme } from "../theme";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getFromStorage, saveToStorage } from "../utils/storage";
+
+const storageKey = "shopping-list";
 
 type ShoppingListItemType = {
   id: string;
@@ -10,20 +13,20 @@ type ShoppingListItemType = {
   lastUpdatedTimestamp: number;
 };
 
-const initialList: ShoppingListItemType[] = [
-  {
-    id: "1",
-    name: "Coffee",
-  },
-  {
-    id: "2",
-    name: "Eggs",
-  },
-  {
-    id: "3",
-    name: "Bread",
-  },
-];
+// const initialList: ShoppingListItemType[] = [
+//   {
+//     id: "1",
+//     name: "Coffee",
+//   },
+//   {
+//     id: "2",
+//     name: "Eggs",
+//   },
+//   {
+//     id: "3",
+//     name: "Bread",
+//   },
+// ];
 
 // const testData = new Array(1000).fill(null).map((item, index) => ({
 //   id: String(index),
@@ -31,9 +34,18 @@ const initialList: ShoppingListItemType[] = [
 // }));
 
 export default function App() {
-  const [shoppingList, setShoppingList] =
-    useState<ShoppingListItemType[]>(initialList);
+  const [shoppingList, setShoppingList] = useState<ShoppingListItemType[]>([]);
   const [value, setValue] = useState("");
+
+  useEffect(() => {
+    const fetchInitial = async () => {
+      const data = await getFromStorage(storageKey);
+      if (data) {
+        setShoppingList(data);
+      }
+    };
+    fetchInitial();
+  }, []);
 
   const handleSubmit = () => {
     if (value) {
@@ -46,12 +58,14 @@ export default function App() {
         ...shoppingList,
       ];
       setShoppingList(newShoppingList);
+      saveToStorage(storageKey, shoppingList);
       setValue("");
     }
   };
 
   const handleDelete = (id: string) => {
     const newShoppingList = shoppingList.filter((item) => item.id !== id);
+    saveToStorage(storageKey, shoppingList);
     setShoppingList(newShoppingList);
   };
 
@@ -68,7 +82,7 @@ export default function App() {
       }
       return item;
     });
-
+    saveToStorage(storageKey, shoppingList);
     setShoppingList(newShoppingList);
   };
 
